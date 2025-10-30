@@ -1,17 +1,35 @@
 # RPI_DSI_Displays
-Hardware & Kernel DRM Driver for RPI DSI Displays.  
-*Note: This repository is still under development. Feel free to open issues if you have any questions or suggestions.*  
+Hardware & Kernel DRM Driver for RPI DSI Displays.
+
+## Acknowledgments
+This project is based on [CNflysky/RPI_DSI_Displays](https://github.com/CNflysky/RPI_DSI_Displays) and developed as a fork. We thank the original project author for sharing and open source contributions.
+
+*Note: This repository is still under development. Feel free to open issues if you have any questions or suggestions.*
 [Simplified Chinese(简体中文)](./README_zh.md)
 
-forked from [CNflysky/RPI_DSI_Displays](https://github.com/CNflysky/RPI_DSI_Displays)
+# Why DSI?
 
-Using Raspberry Pi 5B
-Limited energy, only used for my 3.97-inch ST7701S screen adaptation
-Parameters are as follows
-3.97-inch 480 * 800 resolution ST7701 driver
+Compared from SPI/DPI panels，DSI panels has taken these advantages:
+- High refresh rate(~60fps)
+- Easy to wire
+- Consume less gpio resources
+- Low power consumption
 
-I only modified the functions that are suitable for the screen to light up normally, without making any other modifications, nor did I modify the file name or variable name. 
-I only modified the core display driver program
+# Limitation
+## Circuit 
+Due to the circuit design of Raspberry Pi boards, RPi 4b on-board DSI connector only routes out 2 DSI lanes, with a maximum resolution of 720p.  
+If you want to drive a panel with more than 2 lanes, you may need to consider the *compute module* or *RPi 5*.  
+## RPiOS
+You must enable `DRM` first in order to use this driver.  
+In `Raspberry Pi OS` releases after `2022-1-28`, `DRM` is enabled by default.  
+Old releases of RPiOS may not support `DRM`,so use latest version of RPiOS is recommended.  
+
+# Supported Panel
+| Part Number | Diagonal | Resolution | Interface | Connector | TP | Target | Note |
+| ---- | ---- | --- | --- | --- | --- | -- | --- |
+|W280BF036I| 2.8 Inch| VGA(480x640) | DSI 1 Lane | 24p | None | `w280bf036i` | |
+|TDO-QHD0500D5| 5.3 Inch| QHD(540x960) | DSI 2 Lane | 33p | FT5406 | `tdo-qhd0500d5` | |
+|ST7701S| 3.97 Inch| WVGA(480x800) | DSI 2 Lanes | 24p | None | `st7701s-397` | Based on BOE397 panel with ST7701S controller |
 
 # Configuration
 *Note: this tutorial and code only keep compatibility with latest RPiOS. If you are using old RPiOS, you are on your own.  
@@ -33,10 +51,15 @@ git clone https://github.com/CNflysky/RPI_DSI_Displays --depth 1
 cd RPI_DSI_Displays/src
 ```
 
-Select target among `Target` column of `Supported Panel` table.  
-e.g. install 2.8 Inch driver for RPi 4:  
+Select target among `Target` column of `Supported Panel` table.
+e.g. install 2.8 Inch driver for RPi 4:
 ```bash
 make w280bf036i
+sudo make install
+```
+e.g. install 3.97 Inch ST7701S driver:
+```bash
+make st7701s-397
 sudo make install
 ```
 Reboot.

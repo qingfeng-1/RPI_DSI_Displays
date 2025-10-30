@@ -31,6 +31,9 @@ clean:
 w280bf036i: modules
 	dtc -I dts -O dtb -o $(DTBO_NAME).dtbo dts/vc4-kms-dsi-w280bf036i-$(PI_MODEL).dts
 
+st7701s-397: modules
+	dtc -I dts -O dtb -o $(DTBO_NAME).dtbo dts/vc4-kms-dsi-st7701s-397-$(PI_MODEL).dts
+
 tdo-qhd0500d5: modules
 	dtc -I dts -O dtb -o $(DTBO_NAME).dtbo dts/vc4-kms-dsi-tdo-qhd0500d5-$(PI_MODEL).dts
 

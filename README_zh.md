@@ -1,6 +1,10 @@
 # RPI_DSI_Displays
-适用于树莓派DSI屏幕的硬件与驱动程序。  
-*注意：本仓库仍在开发中. 如果您有任何意见或建议，欢迎提issue。*  
+适用于树莓派DSI屏幕的硬件与驱动程序。
+
+## 致谢
+本项目基于 [CNflysky/RPI_DSI_Displays](https://github.com/CNflysky/RPI_DSI_Displays) 进行fork开发，感谢原项目作者的分享和开源贡献。
+
+*注意：本仓库仍在开发中. 如果您有任何意见或建议，欢迎提issue。*
 # 为什么使用DSI?
 
 和传统的SPI/DPI屏幕相比，DSI屏幕具有以下优点:
@@ -23,6 +27,7 @@
 | ---- | ---- | --- | --- | --- | --- | --- | --- |
 |W280BF036I| 2.8 Inch| VGA(480x640) | DSI 1 Lane | 24p | 无 |  `w280bf036i` | |
 |TDO-QHD0500D5| 5.3 Inch | QHD(540x960) | DSI 2 Lanes | 33p | FT5406 | `tdo-qhd0500d5` | |
+|ST7701S| 3.97 Inch| WVGA(480x800) | DSI 2 Lanes | 24p | 无 |  `st7701s-397` | 基于BOE397屏幕，使用ST7701S控制器 |
 
 
 # 配置
@@ -45,13 +50,18 @@ git clone https://github.com/CNflysky/RPI_DSI_Displays --depth 1
 cd RPI_DSI_Displays/src
 ```
 
-请根据以上表格的`编译目标`一栏，选择屏幕型号。  
-示例：安装2.8寸屏幕的驱动：  
+请根据以上表格的`编译目标`一栏，选择屏幕型号。
+示例：安装2.8寸屏幕的驱动：
 ```bash
 make w280bf036i
 sudo make install
 ```
-重启。  
+示例：安装3.97寸ST7701S屏幕的驱动：
+```bash
+make st7701s-397
+sudo make install
+```
+重启。
 
 使用`sudo make remove`来进行卸载。  
 

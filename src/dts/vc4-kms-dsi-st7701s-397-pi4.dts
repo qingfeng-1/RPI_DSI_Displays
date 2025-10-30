@@ -1,0 +1,50 @@
+/dts-v1/;
+/plugin/;
+/ {
+	compatible = "raspberrypi,4-model-b","brcm,bcm2711";
+	
+	fragment@0 {
+		target-path="/";
+		__overlay__ {
+			rpi_dsi_display_bl:rpi-dsi-display-bl {
+				compatible = "gpio-backlight";
+				gpios = <&gpio 45 0>;
+				default-on;
+			};
+		};
+	};
+	
+	fragment@1 {
+		target = <&i2c_csi_dsi>;
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+	
+	fragment@2 {
+		target = <&dsi1>;
+		__overlay__{
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			port {
+				rpi_dsi_out_port:endpoint {
+					remote-endpoint = <&rpi_dsi_port>;
+				};
+			};
+			
+			st7701s_display:st7701s-display@0 {
+				compatible    = "sitronix,st7701s";
+				status        = "okay";
+				reg           = <0>;
+				backlight = <&rpi_dsi_display_bl>;
+				rotation = <0>;
+				port {
+					rpi_dsi_port: endpoint {
+						remote-endpoint = <&rpi_dsi_out_port>;
+					};
+				};
+			};
+		};
+	};
+};

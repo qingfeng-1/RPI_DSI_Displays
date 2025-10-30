@@ -120,6 +120,204 @@ inline static int w280bf036i_init_sequence(struct mipi_dsi_device *dsi)
 	return ctx.accum_err;
 }
 
+// 专门为3.97寸ST7701S屏幕创建的初始化序列
+inline static int st7701s_397_init_sequence(struct mipi_dsi_device *dsi)
+{
+	struct mipi_dsi_multi_context ctx = { .dsi = dsi };
+	int error_count = 0;
+	
+	// 增加初始延时，确保屏幕电源稳定
+	msleep(50);
+	
+	// Command2 BK3 Selection: Enable the BK function of Command2
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x13);
+	if (ctx.accum_err) error_count++;
+	
+	// Unknown
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xEF, 0x08);
+	if (ctx.accum_err) error_count++;
+	
+	// Command2 BK0 Selection: Disable the BK function of Command2
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x10);
+	if (ctx.accum_err) error_count++;
+	
+	// Display Line Setting - 针对480x800分辨率优化
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xC0, 0x63, 0x00);
+	if (ctx.accum_err) error_count++;
+	
+	// Porch Control - 针对480x800分辨率优化
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xC1, 0x09, 0x02);
+	if (ctx.accum_err) error_count++;
+	
+	// Inversion selection & Frame Rate Control
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xC2, 0x20, 0x02);
+	if (ctx.accum_err) error_count++;
+	
+	// Unknown
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xCC, 0x18);
+	if (ctx.accum_err) error_count++;
+	
+	// Positive Voltage Gamma Control
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB0, 0x40, 0x0E, 0x51, 0x0F, 0x11, 0x07, 0x00,
+	                     0x09, 0x06, 0x1E, 0x04, 0x12, 0x11, 0x64, 0x29, 0xDF);
+	if (ctx.accum_err) error_count++;
+	
+	// Negative Voltage Gamma Control
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB1, 0x40, 0x07, 0x4C, 0x0A, 0x0E, 0x04, 0x00, 0x08,
+	                     0x08, 0x09, 0x1D, 0x01, 0x0E, 0x0C, 0x6A, 0x34, 0xDF);
+	if (ctx.accum_err) error_count++;
+
+	// Command2 BK1 Selection: Enable the BK function of Command2
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x11);
+	if (ctx.accum_err) error_count++;
+	
+	// Vop Amplitude setting
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB0, 0x30);
+	if (ctx.accum_err) error_count++;
+	
+	// VCOM amplitude setting
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB1, 0x48);
+	if (ctx.accum_err) error_count++;
+	
+	// VGH Voltage setting
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB2, 0x80);
+	if (ctx.accum_err) error_count++;
+	
+	// TEST Command Setting
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB3, 0x80);
+	if (ctx.accum_err) error_count++;
+	
+	// VGL Voltage setting
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB5, 0x4F);
+	if (ctx.accum_err) error_count++;
+	
+	// Power Control 1
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB7, 0x85);
+	if (ctx.accum_err) error_count++;
+	
+	// Power Control 2
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB8, 0x23);
+	if (ctx.accum_err) error_count++;
+	
+	// Power Control 3
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xB9, 0x22, 0x13);
+	if (ctx.accum_err) error_count++;
+
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xBB, 0x03);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xBC, 0x10);
+	if (ctx.accum_err) error_count++;
+
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xC0, 0x89);
+	if (ctx.accum_err) error_count++;
+	
+	// Source pre_drive timing set1
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xC1, 0x78);
+	if (ctx.accum_err) error_count++;
+	
+	// Source EQ2 Setting
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xC2, 0x78);
+	if (ctx.accum_err) error_count++;
+
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xEF, 0x08, 0x08, 0x08, 0x4C, 0x3F, 0x54);
+	if (ctx.accum_err) error_count++;
+	
+	// MIPI Setting 1
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xD0, 0x88);
+	if (ctx.accum_err) error_count++;
+	
+	// Sunlight Readable Enhancement
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE0, 0x00, 0x00, 0x02);
+	if (ctx.accum_err) error_count++;
+	
+	// Noise Reduce Control
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE1, 0x04, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00,
+	                     0x00, 0x00, 0x10, 0x10);
+	if (ctx.accum_err) error_count++;
+	
+	// Sharpness Control
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+	if (ctx.accum_err) error_count++;
+	
+	// Color Calibration Control
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE3, 0x00, 0x00, 0x33, 0x00);
+	if (ctx.accum_err) error_count++;
+	
+	// Skin Tone Preservation Control
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE4, 0x22, 0x00);
+	if (ctx.accum_err) error_count++;
+
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE5, 0x03, 0x34, 0xAF, 0xB3, 0x05, 0x34, 0xAF,
+	                     0xB3, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE6, 0x00, 0x00, 0x33, 0x00);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE7, 0x22, 0x00);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE8, 0x04, 0x34, 0xAF, 0xB3, 0x06, 0x34, 0xAF,
+	                     0xB3, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+	if (ctx.accum_err) error_count++;
+	
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xEB, 0x02, 0x00, 0x40, 0x40, 0x00, 0x00, 0x00);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xEC, 0x00, 0x00);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xED, 0xFA, 0x45, 0x0B, 0xFF, 0xFF, 0xFF, 0xFF,
+	                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xB0, 0x54, 0xAF);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xEF, 0x08, 0x08, 0x08, 0x45, 0x3F, 0x54);
+	if (ctx.accum_err) error_count++;
+	
+	/* disable Command2 */
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x13);
+	if (ctx.accum_err) error_count++;
+
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE6, 0x16, 0x7c);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE8, 0x00, 0x0E);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x00);
+	if (ctx.accum_err) error_count++;
+
+	// 软件复位
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0x11);
+	if (ctx.accum_err) error_count++;
+	
+	// 增加延时确保软件复位完成
+	msleep(200);
+
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x13);
+	if (ctx.accum_err) error_count++;
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE8, 0x00, 0x0C);
+	if (ctx.accum_err) error_count++;
+	msleep(30); // 增加延时
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xE8, 0x00, 0x00);
+	if (ctx.accum_err) error_count++;
+
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x00);
+	if (ctx.accum_err) error_count++;
+
+	// 设置 tearing effect on
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0x35, 0x00);
+	if (ctx.accum_err) error_count++;
+	
+	// 开启显示
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0x29);
+	if (ctx.accum_err) error_count++;
+
+	// 增加最终延时，确保显示稳定
+	msleep(300);
+	
+	// 如果错误次数过多，可能是屏幕未连接或硬件故障
+	if (error_count > 15) {
+		dev_warn(&dsi->dev, "Detected %d DSI command errors, panel may not be connected\n", error_count);
+		return -ENODEV; // 返回设备不存在的错误，但不会阻止系统启动
+	}
+	
+	return ctx.accum_err;
+}
+
 inline static int tdo_qhd0500d5_init_sequence(struct mipi_dsi_device *dsi)
 {
 	struct mipi_dsi_multi_context ctx = { .dsi = dsi };
@@ -133,6 +331,12 @@ static int rpi_dsi_display_prepare(struct drm_panel *panel)
 {
 	struct rpi_dsi_display *rpi_dsi_display = to_rpi_dsi_display(panel);
 	struct mipi_dsi_multi_context ctx = { .dsi = rpi_dsi_display->dsi };
+	int retry_count = 0;
+	int ret;
+	
+	// 添加初始延时，确保电源稳定
+	msleep(30);
+	
 	if (rpi_dsi_display->reset) {
 		gpiod_set_value_cansleep(rpi_dsi_display->reset, 1);
 		msleep(rpi_dsi_display->desc->pwr_timing->post_reset);
@@ -143,31 +347,46 @@ static int rpi_dsi_display_prepare(struct drm_panel *panel)
 	}
 
 	if (rpi_dsi_display->desc->do_sw_reset) {
+		// 添加软件复位
 		mipi_dsi_dcs_soft_reset_multi(&ctx);
 		msleep(rpi_dsi_display->desc->pwr_timing->after_reset);
 	}
 
-	if (rpi_dsi_display->desc->init_sequence) {
-		int ret = rpi_dsi_display->desc->init_sequence(
-			rpi_dsi_display->dsi);
-		if (IS_ERR(&ret)) {
-			dev_err(panel->dev,
-				"Failed to send init sequence to panel: %d",
-				ret);
-			return PTR_ERR(&ret);
+	// 添加重试机制，但减少重试次数和延时，避免长时间阻塞系统启动
+	while (retry_count < 2) { // 减少到2次重试
+		if (rpi_dsi_display->desc->init_sequence) {
+			ret = rpi_dsi_display->desc->init_sequence(rpi_dsi_display->dsi);
+			if (ret == 0) {
+				break; // 成功，退出重试循环
+			}
+			dev_warn(panel->dev, "Init sequence attempt %d failed, retrying...\n",
+				 retry_count + 1);
+			retry_count++;
+			msleep(50); // 减少重试延时
 		}
 	}
+	
+	if (retry_count >= 2) {
+		dev_warn(panel->dev, "Panel initialization failed after 2 attempts, but continuing boot\n");
+		// 不返回错误，允许系统继续启动
+		// 只是在没有屏幕的情况下，用户会看到黑屏
+	}
+	
+	// 尝试退出睡眠模式
 	mipi_dsi_dcs_exit_sleep_mode_multi(&ctx);
 	msleep(rpi_dsi_display->desc->pwr_timing->slpout);
-	return ctx.accum_err;
+	
+	return 0; // 总是返回成功，允许系统继续启动
 }
 
 inline static int rpi_dsi_display_enable(struct drm_panel *panel)
 {
 	struct mipi_dsi_multi_context ctx = { .dsi = to_mipi_dsi_device(
 						      panel->dev) };
+	
 	mipi_dsi_dcs_set_display_on_multi(&ctx);
-	return ctx.accum_err;
+	
+	return 0; // 总是返回成功
 }
 
 inline static int rpi_dsi_display_disable(struct drm_panel *panel)
@@ -183,7 +402,7 @@ static int rpi_dsi_display_unprepare(struct drm_panel *panel)
 	struct rpi_dsi_display *rpi_dsi_display = to_rpi_dsi_display(panel);
 	struct mipi_dsi_multi_context ctx = { .dsi = rpi_dsi_display->dsi };
 	mipi_dsi_dcs_enter_sleep_mode_multi(&ctx);
-	if (!rpi_dsi_display->reset)
+	if (rpi_dsi_display->reset)
 		gpiod_set_value_cansleep(rpi_dsi_display->reset, 0);
 	return ctx.accum_err;
 }
@@ -265,6 +484,26 @@ static const struct drm_display_mode w280bf036i_mode = {
 	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
 };
 
+// 3.97寸ST7701S屏幕的显示模式配置 (480x800)
+static const struct drm_display_mode st7701s_397_mode = {
+	.clock = 25000, // 增加时钟频率以支持更高分辨率
+
+	.hdisplay = 480,
+	.hsync_start = 480 + /* HFP */ 20,
+	.hsync_end = 480 + 20 + /* HSync */ 10,
+	.htotal = 480 + 20 + 10 + /* HBP */ 30,
+
+	.vdisplay = 800,
+	.vsync_start = 800 + /* VFP */ 15,
+	.vsync_end = 800 + 15 + /* VSync */ 8,
+	.vtotal = 800 + 15 + 8 + /* VBP */ 20,
+
+	.width_mm = 52,
+	.height_mm = 86,
+
+	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
+};
+
 // panel timing copied from panel-sharp-ls043t1le01.c
 static const struct drm_display_mode tdo_qhd0500d5_mode = {
 	.clock = 41496,
@@ -285,11 +524,16 @@ static const struct drm_display_mode tdo_qhd0500d5_mode = {
 	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
 };
 
-static const struct power_on_timing w280bf036i_pwr_timing = { .post_reset = 20,
+static const struct power_on_timing w280bf036i_pwr_timing = { .post_reset = 50,
 							      .reset_low = 20,
-							      .after_reset =
-								      120,
+							      .after_reset = 120,
 							      .slpout = 120 };
+
+// 为3.97寸ST7701S屏幕创建专门的电源时序配置
+static const struct power_on_timing st7701s_397_pwr_timing = { .post_reset = 100,
+							      .reset_low = 100,
+							      .after_reset = 200,
+							      .slpout = 200 };
 
 static const struct rpi_dsi_display_desc w280bf036i_desc = {
 	.mode = &w280bf036i_mode,
@@ -299,6 +543,18 @@ static const struct rpi_dsi_display_desc w280bf036i_desc = {
 	.format = MIPI_DSI_FMT_RGB888,
 	.init_sequence = w280bf036i_init_sequence,
 	.pwr_timing = &w280bf036i_pwr_timing,
+	.do_sw_reset = true
+};
+
+// 3.97寸ST7701S屏幕的描述结构
+static const struct rpi_dsi_display_desc st7701s_397_desc = {
+	.mode = &st7701s_397_mode,
+	.lanes = 2,
+	.flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
+		 MIPI_DSI_MODE_LPM,
+	.format = MIPI_DSI_FMT_RGB888,
+	.init_sequence = st7701s_397_init_sequence,
+	.pwr_timing = &st7701s_397_pwr_timing,
 	.do_sw_reset = true
 };
 
@@ -394,6 +650,7 @@ static void rpi_dsi_display_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id rpi_dsi_display_ids[] = {
 	{ .compatible = "wlk,w280bf036i", .data = &w280bf036i_desc },
+	{ .compatible = "sitronix,st7701s", .data = &st7701s_397_desc }, // 3.97寸ST7701S屏幕
 	{ .compatible = "truly,tdo-qhd0500d5", .data = &tdo_qhd0500d5_desc },
 	{}
 };
