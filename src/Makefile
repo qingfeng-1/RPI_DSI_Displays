@@ -44,10 +44,21 @@ install: remove
 	echo "ignore_lcd=1" >> $(CONFIG_TXT)
 	echo "dtoverlay=$(DTBO_NAME)" >> $(CONFIG_TXT)
 	echo "disable_fw_kms_setup=0" >> $(CONFIG_TXT)
+	echo "hdmi_group=2" >> $(CONFIG_TXT)
+	echo "hdmi_mode=1" >> $(CONFIG_TXT)
+	echo "hdmi_mode=87" >> $(CONFIG_TXT)
+	echo "hdmi_drive=1" >> $(CONFIG_TXT)
+	echo "hdmi_cvt 480 800 60 6 0 0 0" >> $(CONFIG_TXT)
 	echo "Please reboot to apply changes"
 
 remove:
 	rm -rf $(MODULE_INSTALL_DIR)/$(MODULE_NAME)
 	rm -rf $(OVERLAY_DIR)/$(DTBO_NAME).dtbo
 	sed -i "/ignore_lcd=1/d" $(CONFIG_TXT)
+	sed -i "/disable_fw_kms_setup=0/d" $(CONFIG_TXT)
+	sed -i "/hdmi_group=2/d" $(CONFIG_TXT)
+	sed -i "/hdmi_mode=1/d" $(CONFIG_TXT)
+	sed -i "/hdmi_mode=87/d" $(CONFIG_TXT)
+	sed -i "/hdmi_drive=1/d" $(CONFIG_TXT)
+	sed -i "/hdmi_cvt 480 800 60 6 0 0 0/d" $(CONFIG_TXT)
 	sed -i "/dtoverlay=$(DTBO_NAME)/d" $(CONFIG_TXT)
