@@ -4,8 +4,8 @@ MODEL_FILE := /proc/device-tree/model
 MODEL_EXISTS := $(wildcard $(MODEL_FILE))
 PI_MODEL := pi4
 MODULE_NAME := panel-rpi-dsi-display.ko
-CONFIG_TXT := /boot/firmware/config.txt
-OVERLAY_DIR := /boot/firmware/overlays
+CONFIG_TXT := /boot/config.txt
+OVERLAY_DIR := /boot/overlays
 MODULE_INSTALL_DIR := /lib/modules/$(shell uname -r)/kernel/drivers/gpu/drm/panel
 
 ifneq ($(MODEL_EXISTS),)
@@ -43,6 +43,7 @@ install: remove
 	depmod -a
 	echo "ignore_lcd=1" >> $(CONFIG_TXT)
 	echo "dtoverlay=$(DTBO_NAME)" >> $(CONFIG_TXT)
+	echo "disable_fw_kms_setup=0" >> $(CONFIG_TXT)
 	echo "Please reboot to apply changes"
 
 remove:
